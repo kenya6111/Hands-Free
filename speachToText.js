@@ -1,3 +1,4 @@
+// 音声を読み上げる関数
 function say (text, callback) {
   const play_option = new SpeechSynthesisUtterance()
   let speechTxt = text
@@ -13,29 +14,72 @@ function say (text, callback) {
   };
 }
 
+// 点検項目定義
 const checkList ={
   0:'点検項目1',
   1:'点検項目2',
-  // 2:'点検項目3',
+  2:'点検項目3',
   // 3:'点検項目4',
   // 4:'点検項目5',
   // 5:'点検項目6',
 }
-let finalTranscript = ''; // 確定した(黒の)認識結果
+let finalTranscript = ''; // 確定した音声入力結果
 let currentCheckIndex = 0; // 現在のチェック項目インデックス
 
+// 音声認識インスタンス作成
+const createRecognition = (onResultCallback) => {
+  const SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition
+  const recognition = new SpeechRecognition()
+  recognition.lang = 'ja-JP'
+  recognition.continuous=true
+  recognition.onresult = onResultCallback;
 
-const SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition
-const recognition = new SpeechRecognition()
-recognition.lang = 'ja-JP'
-// recognition.interimResults = true;
-recognition.continuous=true
+  recognition.error = (event) => console.log('エラーが発生しました。', event.error)
+  recognition.onaudiostart = () => console.log('録音が開始されました。')
+  recognition.onend = () => console.log('音声認識が終了しました。')
+  recognition.onnomatch = () => console.log('認識できませんでした。')
+  return recognition;
+}
 
-const recognition2 = new SpeechRecognition()
-recognition2.lang = 'ja-JP'
-// recognition.interimResults = true;
-recognition2.continuous=true
-recognition2.onresult = (event) => {
+// メイン音声認識
+const recognition = createRecognition((event) => {
+  console.log("-----onresult-----")
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    let transcript = event.results[i][0].transcript;
+    finalTranscript += transcript;
+    console.log(finalTranscript)
+    console.log(event.results[i].isFinal)
+
+    if(transcript.includes('OK')){
+      console.log("^^^^次の項目へ^^^^")
+      recognition.stop()
+      currentCheckIndex++;
+      if(currentCheckIndex < Object.keys(checkList).length){
+        checkStart()
+      }else{
+        console.log('すべての点検が完了しました')
+        say('すべての点検が完了しました',{})
+      }
+    }
+    if(transcript.includes('NG')){
+      console.log("^^^^問題点の報告へ^^^^")
+      recognition.stop()
+      // 読み上げ開始
+      say("問題点の報告をしてください",()=>{
+        console.log('音声認識を開始します')
+        finalTranscript=''
+        recognition.stop()
+        recognition2.start()
+      })
+
+    }
+
+  }
+  console.log(event)
+})
+
+// 問題報告音声認識
+const recognition2 = createRecognition((event) => {
   console.log("-----onresult2-----")
 
   for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -58,57 +102,7 @@ recognition2.onresult = (event) => {
     }
   }
   console.log(event)
-}
-recognition.error = (event) => {
-  console.log('エラーが発生しました。', event.error)
-}
-recognition.onaudiostart = () => {
-  console.log('録音が開始されました。')
-}
-recognition.onend = () => {
-  console.log('音声認識が終了しました。')
-}
-recognition.onnomatch = () => {
-  console.log('認識できませんでした。')
-}
-
-recognition.onresult = (event) => {
-  console.log("-----onresult-----")
-
-  for (let i = event.resultIndex; i < event.results.length; i++) {
-    let transcript = event.results[i][0].transcript;
-    finalTranscript += transcript;
-    console.log(finalTranscript)
-    console.log(event.results[i].isFinal)
-
-    if(transcript.includes('OK')){
-      console.log("^^^^次の項目へ^^^^")
-      recognition.stop()
-      currentCheckIndex++;
-      if(currentCheckIndex < Object.keys(checkList).length){
-        checkStart()
-      }else{
-        console.log('すべての点検が完了しました')
-        say('すべての点検が完了しました',{})
-      }
-    }
-
-    if(transcript.includes('NG')){
-      console.log("^^^^問題点の報告へ^^^^")
-      recognition.stop()
-      // 読み上げ開始
-      say("問題点の報告をしてください",()=>{
-        console.log('音声認識を開始します')
-        finalTranscript=''
-        recognition.stop()
-        recognition2.start()
-      })
-
-    }
-
-  }
-  console.log(event)
-}
+})
 
 // ここからロジック実装
 function checkStart(){
