@@ -49,8 +49,9 @@ const recognition = createRecognition((event) => {
     finalTranscript += transcript;
     console.log(finalTranscript)
     console.log(event.results[i].isFinal)
+    // say(transcript,()=>{})
 
-    if(transcript.includes('OK')){
+    if(transcript.includes('次')){
       console.log("^^^^次の項目へ^^^^")
       recognition.stop()
       currentCheckIndex++;
