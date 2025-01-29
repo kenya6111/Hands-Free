@@ -53,6 +53,7 @@ async function say (text) {
     const play_option = new SpeechSynthesisUtterance()
     play_option.text = text
     play_option.lang = 'ja-JP';
+    play_option.pitch = 1.2; // ピッチ (0 ～ 2, 通常 1.0)
     const voices = speechSynthesis.getVoices();
     const selectedVoice = voices.find(voice => voice.name.includes("O-Ren"));
 
