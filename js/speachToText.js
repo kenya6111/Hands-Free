@@ -33,12 +33,32 @@ function scroll(targetId) {
   }
 }
 
+// アコーディオンを開閉する関数
+function openAccordionGroup(groupId) {
+  // すべての大項目のアコーディオンを閉じる
+  document.querySelectorAll(".accordion-collapse").forEach((item) => {
+    let bsCollapse = new bootstrap.Collapse(item, { toggle: false });
+    bsCollapse.hide(); // 閉じる
+  });
+
+  // 指定されたアコーディオンを開く
+  let targetAccordion = document.getElementById(groupId);
+  let bsCollapse = new bootstrap.Collapse(targetAccordion, { toggle: false });
+  bsCollapse.show();
+}
+
 // 音声を読み上げる関数
 async function say (text) {
   return new Promise((resolve) => {
     const play_option = new SpeechSynthesisUtterance()
     play_option.text = text
     play_option.lang = 'ja-JP';
+    const voices = speechSynthesis.getVoices();
+    const selectedVoice = voices.find(voice => voice.name.includes("O-Ren"));
+
+    if (selectedVoice) {
+      play_option.voice = selectedVoice;
+    }
     if (speechSynthesis.speaking) {
       speechSynthesis.cancel();
     }
@@ -145,10 +165,19 @@ function nextCheck() {
 
   currentCheckIndex++;
   if (currentCheckIndex < Object.keys(checkList).length) {
-    document.getElementById("bunsi").value = currentCheckIndex;
+    document.getElementById("bunsi").innerHTML = currentCheckIndex
     let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
     document.getElementById("parsent").innerHTML = progressPercent;
     document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+
+    // **アコーディオンを開閉する**
+    if (currentCheckIndex < 5) {
+      openAccordionGroup("collapseGroupOne"); // 大項目Aを開く
+    } else if (currentCheckIndex < 10) {
+      openAccordionGroup("panelsStayOpen-collapseTwo"); // 大項目Bを開く
+    } else {
+      openAccordionGroup("panelsStayOpen-collapseThree"); // 大項目Cを開く
+    }
 
     checkStart();
   } else {
