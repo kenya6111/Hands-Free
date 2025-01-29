@@ -12,22 +12,21 @@ function scroll(targetId) {
 }
 
 // 音声を読み上げる関数
-function say (text, callback) {
-  const play_option = new SpeechSynthesisUtterance()
-  let speechTxt = text
-  play_option.text = speechTxt;
-  play_option.lang = 'ja-JP';
-  speechSynthesis.cancel();
-  window.speechSynthesis.speak(play_option)
-  document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-danger");// 現在の項目を強調表示する。
-   // 読み上げる項目を強調＆スクロール
-   scroll(`inspection${currentCheckIndex + 1}`);
-
-  // 読み上げ完了時に実行する処理
-  play_option.onend = () => {
-    console.log('読み上げが完了しました。');
-      if (callback) callback(); // コールバック関数を呼び出す
-  };
+async function say (text) {
+  return new Promise((resolve) => {
+    const play_option = new SpeechSynthesisUtterance()
+    play_option.text = text
+    play_option.lang = 'ja-JP';
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+    window.speechSynthesis.speak(play_option)
+    // 読み上げ完了時に実行する処理
+    play_option.onend = () => {
+      console.log('読み上げが完了しました。');
+      resolve()
+    };
+  })
 }
 
 // 点検項目定義
@@ -70,31 +69,16 @@ const recognition = createRecognition((event) => {
   console.log("-----onresult-----")
   for (let i = event.resultIndex; i < event.results.length; i++) {
     let transcript = event.results[i][0].transcript;
-    console.log('transcript: '+transcript)
-    console.log(typeof transcript)
-    console.log(event.results[i].isFinal)
+    console.log("📢 認識結果: " + transcript);
 
     if(isNumeric(transcript)){
-      // say(transcript,()=>{console.log("アンサーバック")}) // 音声入力値を読み上げ
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
+      say(transcript)
     }
 
     if(transcript.includes('次')){
       console.log("^^^^次の項目へ^^^^")
-      recognition.stop()
-      document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-danger"); // 現在の項目の強調表示を除去
-      document.getElementById("bunsi").value = currentCheckIndex +1
-      progressPercent = Math.round((currentCheckIndex/Object.keys(checkList).length) * 100)
-      document.getElementById("parsent").innerHTML = progressPercent
-      document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`
-      currentCheckIndex++;
-      document.getElementById("bunsi").innerHTML = currentCheckIndex
-      if(currentCheckIndex < Object.keys(checkList).length){
-        checkStart()
-      }else{
-        console.log('すべての点検が完了しました')
-        say('すべての点検が完了しました',{})
-      }
+      stopRecognition().then(nextCheck)
     }
     if(transcript.includes('NG')){
       console.log("^^^^問題点の報告へ^^^^")
@@ -134,13 +118,51 @@ const recognition2 = createRecognition((event) => {
   console.log(event)
 })
 
+function stopRecognition(){
+  return new Promise(function(resolve, reject){
+    if(recognition){
+      recognition.stop()
+      recognition.onend = function (){
+        console.log("🎤 音声認識が完全に停止しました");
+        resolve()
+      }
+    }else{
+      resolve()
+    }
+
+  })
+}
+
+// 🔹 次の点検項目へ進む
+function nextCheck() {
+  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-danger");
+
+  currentCheckIndex++;
+  if (currentCheckIndex < Object.keys(checkList).length) {
+    document.getElementById("bunsi").value = currentCheckIndex;
+    let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
+    document.getElementById("parsent").innerHTML = progressPercent;
+    document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+
+    checkStart();
+  } else {
+    console.log("🎉 すべての点検が完了しました");
+    say("すべての点検が完了しました");
+  }
+}
 // ここからロジック実装
 function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
     const currentItem = checkList[currentCheckIndex];
     console.log(`###${currentItem}を開始します###`)
-    say(`${currentItem}`,()=>{
-      recognition.start()
+    // say(`${currentItem}`,()=>{
+    //   recognition.start()
+    // });
+    say(`${currentItem}`)
+    .then(()=>{
+      document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-danger");
+      scroll(`inspection${currentCheckIndex + 1}`);
+      recognition.start();
     });
   }else{
     console.log("点検完了")
@@ -153,6 +175,3 @@ document.getElementById("check-start").addEventListener('click',()=>{
   currentCheckIndex = 0; // 初期化
   checkStart();
 })
-
-
-// ボタン押す　→　「オン検査綱目A開始」　　→ 
