@@ -1,7 +1,29 @@
 let currentCheckIndex = 0; // 現在のチェック項目インデックス
+
 function isNumeric(value) {
   return /^-?\d+(\.\d+)?$/.test(value);
 }
+
+// 点検項目定義
+const checkList ={
+  0:'検査項目A',
+  1:'検査項目B',
+  2:'検査項目C',
+  3:'検査項目D',
+  4:'検査項目E',
+  5:'検査項目F',
+  6:'検査項目G',
+  7:'検査項目H',
+  8:'検査項目I',
+  9:'検査項目J',
+  10:'検査項目K',
+  11:'検査項目L',
+  12:'検査項目M',
+  13:'検査項目N',
+  14:'検査項目O',
+}
+document.getElementById("bunbo").innerHTML = Object.keys(checkList).length
+
 function scroll(targetId) {
   // 新しい項目を強調
   const targetElement = document.getElementById(targetId);
@@ -29,25 +51,6 @@ async function say (text) {
   })
 }
 
-// 点検項目定義
-const checkList ={
-  0:'検査項目A',
-  1:'検査項目B',
-  2:'検査項目C',
-  3:'検査項目D',
-  4:'検査項目E',
-  5:'検査項目F',
-  6:'検査項目G',
-  7:'検査項目H',
-  8:'検査項目I',
-  9:'検査項目J',
-  10:'検査項目K',
-  11:'検査項目L',
-  12:'検査項目M',
-  13:'検査項目N',
-  14:'検査項目O',
-}
-document.getElementById("bunbo").innerHTML = Object.keys(checkList).length
 
 // 音声認識インスタンス作成
 const createRecognition = (onResultCallback) => {
@@ -73,7 +76,10 @@ const recognition = createRecognition((event) => {
 
     if(isNumeric(transcript)){
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
-      say(transcript)
+      // say(transcript)
+      stopRecognition()
+      .then(() => say(`${transcript} `)) // 数値入力時のみ復唱
+      .then(() => setTimeout(() => recognition.start(), 300)); // 1秒後に音声認識を再開
     }
 
     if(transcript.includes('次')){
