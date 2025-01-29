@@ -1,3 +1,6 @@
+let finalTranscript = ''; // 確定した音声入力結果
+let currentCheckIndex = 0; // 現在のチェック項目インデックス
+
 // 音声を読み上げる関数
 function say (text, callback) {
   const play_option = new SpeechSynthesisUtterance()
@@ -5,6 +8,7 @@ function say (text, callback) {
   play_option.text = speechTxt;
   play_option.lang = 'ja-JP';
   speechSynthesis.cancel();
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border", "border-danger");
   window.speechSynthesis.speak(play_option)
 
   // 読み上げ完了時に実行する処理を指定
@@ -23,8 +27,6 @@ const checkList ={
   // 4:'点検項目5',
   // 5:'点検項目6',
 }
-let finalTranscript = ''; // 確定した音声入力結果
-let currentCheckIndex = 0; // 現在のチェック項目インデックス
 
 // 音声認識インスタンス作成
 const createRecognition = (onResultCallback) => {
@@ -54,6 +56,8 @@ const recognition = createRecognition((event) => {
     if(transcript.includes('次')){
       console.log("^^^^次の項目へ^^^^")
       recognition.stop()
+      document.getElementById(`test${currentCheckIndex+1}`).value="田中健也"
+      document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-danger");
       currentCheckIndex++;
       if(currentCheckIndex < Object.keys(checkList).length){
         checkStart()
@@ -112,6 +116,7 @@ function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
     const currentItem = checkList[currentCheckIndex];
     console.log(`###${currentItem}を開始します###`)
+
     say(`${currentItem}開始`,()=>{
       console.log('音声認識を開始します')
       recognition.start()
