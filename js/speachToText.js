@@ -2,17 +2,10 @@ let currentCheckIndex = 0; // 現在のチェック項目インデックス
 function isNumeric(value) {
   return /^-?\d+(\.\d+)?$/.test(value);
 }
-function highlightAndScroll(targetId) {
-  // 現在の強調表示を削除
-  // document.querySelectorAll(".inspection-item").forEach(item => {
-  //   item.classList.remove("active");
-  // });
-
+function scroll(targetId) {
   // 新しい項目を強調
   const targetElement = document.getElementById(targetId);
   if (targetElement) {
-    // targetElement.classList.add("active");
-
     // 画面の中央にスクロール
     targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
   }
@@ -28,12 +21,12 @@ function say (text, callback) {
   window.speechSynthesis.speak(play_option)
   document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-danger");// 現在の項目を強調表示する。
    // 読み上げる項目を強調＆スクロール
-   highlightAndScroll(`inspection${currentCheckIndex + 1}`);
+   scroll(`inspection${currentCheckIndex + 1}`);
 
   // 読み上げ完了時に実行する処理
   play_option.onend = () => {
     console.log('読み上げが完了しました。');
-    if (callback) callback(); // コールバック関数を呼び出す
+      if (callback) callback(); // コールバック関数を呼び出す
   };
 }
 
@@ -82,7 +75,7 @@ const recognition = createRecognition((event) => {
     console.log(event.results[i].isFinal)
 
     if(isNumeric(transcript)){
-      say(transcript,()=>{console.log("アンサーバック")}) // 音声入力値を読み上げ
+      // say(transcript,()=>{console.log("アンサーバック")}) // 音声入力値を読み上げ
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
     }
 
@@ -146,8 +139,7 @@ function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
     const currentItem = checkList[currentCheckIndex];
     console.log(`###${currentItem}を開始します###`)
-    say(`${currentItem}開始`,()=>{
-      console.log('音声認識を開始します')
+    say(`${currentItem}`,()=>{
       recognition.start()
     });
   }else{
@@ -161,3 +153,6 @@ document.getElementById("check-start").addEventListener('click',()=>{
   currentCheckIndex = 0; // 初期化
   checkStart();
 })
+
+
+// ボタン押す　→　「オン検査綱目A開始」　　→ 
