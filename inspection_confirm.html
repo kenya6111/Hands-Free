@@ -1,0 +1,237 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    </head>
+    <body>
+    <div class="container text-center p-3" >
+        <div id="inspection-result-area" class="border border-light-50 p-5 rounded-4 ">
+            <!-- タイトル -->
+            <div id="title" class="d-flex justify-content-start mb-4">
+                <p class="fw-bold fs-1">検査結果確認画面</p>
+            </div>
+
+            <!-- 検査結果エリア -->
+            <table class="table table-hover mb-4" style="table-layout:fixed;">
+              <h2 class="accordion-header">
+                <button class="accordion-button fs-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGroupOne" aria-expanded="true" aria-controls="collapseGroupOne">
+                  外装寸法測定
+                </button>
+              </h2>
+              <thead>
+                <tr class="fs-4 mb-3">
+                  <th scope="col"  style="width:30%">項目名</th>
+                  <th scope="col"  style="width:25%">結果</th>
+                  <th scope="col"  style="width:25%">状態</th>
+                  <th scope="col"  style="width:20%">編集</th>
+                </tr>
+              </thead>
+              <tbody class="fs-5">
+                <tr>
+                  <td scope="row">全長</td>
+                  <td class="editable">20.5</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn" style="cursor:pointer;"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">全幅</td>
+                  <td class="editable" data-original-value="未入力">未入力</td>
+                  <td><span><i class="bi bi-exclamation-circle fs-3 me-2 text-warning"></i></span>未入力</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">全高</td>
+                  <td class="editable" data-original-value="未入力">未入力</td>
+                  <td><span><i class="bi bi-exclamation-circle fs-3 me-2 text-warning"></i></span>未入力</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">ホイールベースC</td>
+                  <td class="editable" data-original-value="未入力">未入力</td>
+                  <td><span><i class="bi bi-exclamation-circle fs-3 me-2 text-warning"></i></span>未入力</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">トレッド</td>
+                  <td class="editable" data-original-value="未入力">未入力</td>
+                  <td><span><i class="bi bi-exclamation-circle fs-3 me-2 text-warning"></i></span>未入力</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table class="table table-hover mb-4" style="table-layout:fixed;">
+              <h2 class="accordion-header">
+                <button class="accordion-button fs-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGroupOne" aria-expanded="true" aria-controls="collapseGroupOne">
+                    ドア・開口部
+                </button>
+              </h2>
+              <thead>
+                <tr class="fs-4">
+                  <th scope="col" style="width:30%">項目名</th>
+                  <th scope="col" style="width:25%">結果</th>
+                  <th scope="col" style="width:25%">状態</th>
+                  <th scope="col" style="width:20%">編集</th>
+                </tr>
+              </thead>
+              <tbody class="fs-5">
+                <tr class="p-4">
+                  <td scope="row">フロントドア開口幅</td>
+                  <td class="editable">20.5</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">フロントドア開口高さ</td>
+                  <td class="editable">0.3</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">リアドア開口幅</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">リアドア開口高さ</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">トランク開口幅</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-hover mb-4" style="table-layout:fixed;">
+              <h2 class="accordion-header">
+                <button class="accordion-button fs-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGroupOne" aria-expanded="true" aria-controls="collapseGroupOne">
+                    シャーシ関連
+                </button>
+              </h2>
+              <thead>
+                <tr class="fs-4">
+                  <th scope="col"  style="width:30%">項目名</th>
+                  <th scope="col"  style="width:25%">結果</th>
+                  <th scope="col"  style="width:25%">状態</th>
+                  <th scope="col"  style="width:20%">編集</th>
+                </tr>
+              </thead>
+              <tbody class="fs-5">
+                <tr class="p-4">
+                  <td scope="row">フレーム幅</td>
+                  <td class="editable">20.5</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">フレーム高さ</td>
+                  <td class="editable">0.3</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">アクスル間距離</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">サスペンション取付幅</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <td scope="row">サンルーフ開口寸法</td>
+                  <td class="editable">100100</td>
+                  <td><span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>完了</td>
+                  <td>
+                    <i class="bi bi-pencil-square fs-2 edit-btn"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="mt-5">
+              <button type="button" class="w-100 btn btn-dark">完了</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="js/confirm.js"></script>
+</body>
+<style>
+.accordion-button:not(.collapsed){
+    color:black;
+    background-color:white;
+}
+
+.accordion-button {
+    padding: 1rem 0rem;
+}
+
+.accordion {
+    --bs-accordion-btn-focus-border-color:rgba(227,230,244);
+    --bs-accordion-btn-focus-box-shadow: 0 ;
+}
+.accordion-button.collapsed {
+    border-bottom: 2px solid rgba(227,230,244);
+}
+
+.text-complete{
+  color:rgba(7,234,0);
+}
+
+
+.w-30{
+  width:30%;
+}
+
+.w-25{
+  width:25%;
+}
+
+.w-20{
+  width:20%;
+}
+
+
+</style>
+</html>
