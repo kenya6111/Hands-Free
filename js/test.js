@@ -9,21 +9,21 @@ function isNumeric(value) {
 
 // 点検項目定義
 const checkList ={
-  0:{id:"inspection1",name:'全長',category:"外装採寸測定",value:""},
-  1:{id:"inspection2",name:'全幅',category:"外装採寸測定",value:""},
-  2:{id:"inspection3",name:'全高',category:"外装採寸測定",value:""},
-  3:{id:"inspection4",name:'ホイールベース',category:"外装採寸測定",value:""},
-  4:{id:"inspection5",name:'トレッド',category:"外装採寸測定",value:""},
-  5:{id:"inspection6",name:'フロントドア開口幅',category:"ドア・開口部",value:""},
-  6:{id:"inspection7",name:'フロントドア開口高さ',category:"ドア・開口部",value:""},
-  7:{id:"inspection8",name:'リアドア開口幅',category:"ドア・開口部",value:""},
-  8:{id:"inspection9",name:'リアドア開口高さ',category:"ドア・開口部",value:""},
-  9:{id:"inspection10",name:'トランク開口幅',category:"ドア・開口部",value:""},
-  10:{id:"inspection11",name:'フレーム幅', category:"シャーシ関連",value:""},
-  11:{id:"inspection12",name:'フレーム高さ', category:"シャーシ関連",value:""},
-  12:{id:"inspection13",name:'アクスル間距離', category:"シャーシ関連",value:""},
-  13:{id:"inspection14",name:'サスペンション取付幅', category:"シャーシ関連",value:""},
-  14:{id:"inspection15",name:'サンルーフ開口寸法', category:"シャーシ関連",value:""},
+  0:{id:"inspection1",name:'全長',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  1:{id:"inspection2",name:'全幅',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  2:{id:"inspection3",name:'全高',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  3:{id:"inspection4",name:'ホイールベース',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  4:{id:"inspection5",name:'トレッド',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  5:{id:"inspection6",name:'フロントドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  6:{id:"inspection7",name:'フロントドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  7:{id:"inspection8",name:'リアドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  8:{id:"inspection9",name:'リアドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  9:{id:"inspection10",name:'トランク開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  10:{id:"inspection11",name:'フレーム幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  11:{id:"inspection12",name:'フレーム高さ', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  12:{id:"inspection13",name:'アクスル間距離', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  13:{id:"inspection14",name:'サスペンション取付幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  14:{id:"inspection15",name:'サンルーフ開口寸法', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
 }
 document.getElementById("bunbo").innerHTML = Object.keys(checkList).length
 
@@ -52,6 +52,26 @@ function openAccordionGroup(groupId) {
   let targetAccordion = document.getElementById(groupId);
   let bsCollapse = new bootstrap.Collapse(targetAccordion, { toggle: false });
   bsCollapse.show();
+}
+function applyInspectionResultStyle(val,currentCheckIndex) {
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-black");
+  if (isWithinRange(val,currentCheckIndex)) {
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-success-bright"); // 合格なら緑
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-success-thin"); // 合格なら緑
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-success-thin"); // 不合格なら赤
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-success-so-thin"); // 不合格なら赤
+  } else {
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-danger"); // 不合格なら赤
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-red-thin"); // 不合格なら赤
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-red-thin"); // 不合格なら赤
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-red-so-thin"); // 不合格なら赤
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("font-red-thin"); // 不合格なら赤
+    // document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-red-so-thin"); // 不合格なら赤
+  }
+}
+
+function isWithinRange(val, currentCheckIndex){
+  return val >= checkList[currentCheckIndex].minValue && val <= checkList[currentCheckIndex].maxValue
 }
 
 // 音声を読み上げる関数
@@ -105,6 +125,7 @@ const recognition = createRecognition((event) => {
     if(isNumeric(transcript)){
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
       checkList[currentCheckIndex].value=transcript
+      applyInspectionResultStyle(transcript,currentCheckIndex)
       stopRecognition()
       .then(() => say(`${transcript} `)) // 数値入力時のみ復唱
       .then(() => setTimeout(() => recognition.start(), 300)); // 1秒後に音声認識を再開
@@ -171,7 +192,7 @@ function stopRecognition(){
 
 // 🔹 次の点検項目へ進む
 function nextCheck() {
-  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-danger");
+  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
 
   currentCheckIndex++;
   if (currentCheckIndex < Object.keys(checkList).length) {
@@ -210,7 +231,7 @@ function checkStart(){
     console.log(`###${currentItem.name}を開始します###`)
     say(`${currentItem.name}`)
     .then(()=>{
-      document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-danger");
+      document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-black");
       scroll(`inspection${currentCheckIndex + 1}`);
       recognition.start();
     });
