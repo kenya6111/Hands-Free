@@ -48,3 +48,27 @@ document.querySelectorAll(".edit-btn").forEach(editBtn => {
     });
   });
 });
+
+// セッションストレージキー
+const SESSION_KEY = "inspectionResults";
+// sessionから復元
+function loadFromSession() {
+  const checkListJson = sessionStorage.getItem(SESSION_KEY)
+  const checkList = JSON.parse(checkListJson)
+  for(let i =0; i<Object.keys(checkList).length; i++){
+    const inputValue = checkList[i].value
+    if(inputValue){
+      document.getElementById(`inspection-input-${i+1}`).innerHTML=inputValue
+      document.getElementById(`inspection-status-${i+1}`).innerHTML+='<span><i class="bi bi-check2-circle fs-3 me-2 text-complete"></i></span>'
+      document.getElementById(`inspection-status-${i+1}`).innerHTML+='完了'
+    }else{
+      document.getElementById(`inspection-input-${i+1}`).innerHTML='未入力'
+      document.getElementById(`inspection-status-${i+1}`).innerHTML+='<span><i class="bi bi-exclamation-circle fs-3 me-2 text-warning"></i></span>'
+      document.getElementById(`inspection-status-${i+1}`).innerHTML+='未入力'
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  loadFromSession()
+} );

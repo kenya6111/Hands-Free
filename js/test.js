@@ -1,5 +1,6 @@
 let currentCheckIndex = 0; // 現在のチェック項目インデックス
-
+// セッションストレージキー
+const SESSION_KEY = "inspectionResults";
 // const voices = speechSynthesis.getVoices();
 // const selectedVoice = voices.find(voice => voice.name.includes("O-Ren"));
 function isNumeric(value) {
@@ -8,23 +9,27 @@ function isNumeric(value) {
 
 // 点検項目定義
 const checkList ={
-  0:{name:'全長',category:"外装採寸測定"},
-  1:{name:'全幅',category:"外装採寸測定"},
-  2:{name:'全高',category:"外装採寸測定"},
-  3:{name:'ホイールベース',category:"外装採寸測定"},
-  4:{name:'トレッド',category:"外装採寸測定"},
-  5:{name:'フロントドア開口幅',category:"ドア・開口部"},
-  6:{name:'フロントドア開口高さ',category:"ドア・開口部"},
-  7:{name:'リアドア開口幅',category:"ドア・開口部"},
-  8:{name:'リアドア開口高さ',category:"ドア・開口部"},
-  9:{name:'トランク開口幅',category:"ドア・開口部"},
-  10:{name:'フレーム幅', category:"シャーシ関連"},
-  11:{name:'フレーム高さ', category:"シャーシ関連"},
-  12:{name:'アクスル間距離', category:"シャーシ関連"},
-  13:{name:'サスペンション取付幅', category:"シャーシ関連"},
-  14:{name:'サンルーフ開口寸法', category:"シャーシ関連"},
+  0:{id:"inspection1",name:'全長',category:"外装採寸測定",value:""},
+  1:{id:"inspection2",name:'全幅',category:"外装採寸測定",value:""},
+  2:{id:"inspection3",name:'全高',category:"外装採寸測定",value:""},
+  3:{id:"inspection4",name:'ホイールベース',category:"外装採寸測定",value:""},
+  4:{id:"inspection5",name:'トレッド',category:"外装採寸測定",value:""},
+  5:{id:"inspection6",name:'フロントドア開口幅',category:"ドア・開口部",value:""},
+  6:{id:"inspection7",name:'フロントドア開口高さ',category:"ドア・開口部",value:""},
+  7:{id:"inspection8",name:'リアドア開口幅',category:"ドア・開口部",value:""},
+  8:{id:"inspection9",name:'リアドア開口高さ',category:"ドア・開口部",value:""},
+  9:{id:"inspection10",name:'トランク開口幅',category:"ドア・開口部",value:""},
+  10:{id:"inspection11",name:'フレーム幅', category:"シャーシ関連",value:""},
+  11:{id:"inspection12",name:'フレーム高さ', category:"シャーシ関連",value:""},
+  12:{id:"inspection13",name:'アクスル間距離', category:"シャーシ関連",value:""},
+  13:{id:"inspection14",name:'サスペンション取付幅', category:"シャーシ関連",value:""},
+  14:{id:"inspection15",name:'サンルーフ開口寸法', category:"シャーシ関連",value:""},
 }
 document.getElementById("bunbo").innerHTML = Object.keys(checkList).length
+
+function move(location) {
+  window.location.href = location;
+};
 
 function scroll(targetId) {
   // 新しい項目を強調
@@ -99,7 +104,7 @@ const recognition = createRecognition((event) => {
 
     if(isNumeric(transcript)){
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
-      // say(transcript)
+      checkList[currentCheckIndex].value=transcript
       stopRecognition()
       .then(() => say(`${transcript} `)) // 数値入力時のみ復唱
       .then(() => setTimeout(() => recognition.start(), 300)); // 1秒後に音声認識を再開
@@ -146,7 +151,9 @@ const recognition2 = createRecognition((event) => {
   }
   console.log(event)
 })
-
+function saveToSession(){
+  window.sessionStorage.setItem(SESSION_KEY,JSON.stringify(checkList))
+}
 function stopRecognition(){
   return new Promise(function(resolve, reject){
     if(recognition){
@@ -184,20 +191,23 @@ function nextCheck() {
 
     checkStart();
   } else {
-    
     document.getElementById("bunsi").innerHTML = currentCheckIndex
     let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
     document.getElementById("parsent").innerHTML = progressPercent;
     document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+
+    saveToSession()
     console.log("🎉 すべての点検が完了しました");
-    say("すべての点検が完了しました");
+    say('すべての点検が完了しました').then(()=>{
+      move('inspection_confirm.html')
+    })
   }
 }
 // ここからロジック実装
 function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
     const currentItem = checkList[currentCheckIndex];
-    console.log(`###${currentItem}を開始します###`)
+    console.log(`###${currentItem.name}を開始します###`)
     say(`${currentItem.name}`)
     .then(()=>{
       document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-danger");
@@ -206,6 +216,9 @@ function checkStart(){
     });
   }else{
     console.log("点検完了")
+    say('すべての点検が完了しました').then(()=>{
+      move('inspection_confirm.html')
+    })
   }
 }
 
