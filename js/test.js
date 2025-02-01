@@ -77,7 +77,6 @@ function applyInspectionResultStyle(val,currentCheckIndex) {
 function isWithinRange(val, currentCheckIndex){
   return val >= checkList[currentCheckIndex].minValue && val <= checkList[currentCheckIndex].maxValue
 }
-
 // 音声を読み上げる関数
 async function say (text) {
   return new Promise((resolve) => {
@@ -90,6 +89,8 @@ async function say (text) {
 
     if (selectedVoice) {
       play_option.voice = selectedVoice;
+    }else {
+      console.log("🔴 カスタム音声が見つからなかったため、デフォルト音声を使用");
     }
     if (speechSynthesis.speaking) {
       speechSynthesis.cancel();
@@ -289,14 +290,23 @@ function checkStart(){
   }
 }
 
+speechSynthesis.onvoiceschanged =()=>{
+  console.log("カスタム音声がダウンロードされました")
+  let voices = speechSynthesis.getVoices()
+  console.log(voices)
 
-document.addEventListener("DOMContentLoaded", function() {
-    // 実行したい処理
-    currentCheckIndex = 0; // 初期化
+  currentCheckIndex = 0; // 初期化
     say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
       checkStart();
     })
-});
+}
+// document.addEventListener("DOMContentLoaded", function() {
+//     // 実行したい処理
+//     currentCheckIndex = 0; // 初期化
+//     say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
+//       checkStart();
+//     })
+// });
 
 
 document.getElementById("check-start").addEventListener('click',()=>{
