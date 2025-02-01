@@ -142,13 +142,11 @@ const recognition = createRecognition((event) => {
       })
       break;
     }
-    // if(transcript.includes('戻る')){
-    //   console.log("^^^^前の項目へ^^^^")
-    //   stopRecognition().then(()=>{
-    //     i-=1;
-    //   })
-    //   continue
-    // }
+    if(transcript.includes('戻る')){
+      console.log("^^^^前の項目へ^^^^")
+      stopRecognition().then(beforeCheck)
+      continue
+    }
     // if(transcript.includes('次')){
     //   console.log("^^^^次の項目へ^^^^")
     if(transcript!=''){
@@ -164,9 +162,7 @@ const recognition = createRecognition((event) => {
     //     recognition.stop()
     //     recognition2.start()
     //   })
-
     // }
-
   }
   console.log(event)
 })
@@ -248,37 +244,27 @@ function nextCheck() {
 
 // 🔹 前の点検項目へ進む
 function beforeCheck() {
-  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
+  if(currentCheckIndex>0){
+    document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
+    currentCheckIndex-=1;
 
-  currentCheckIndex--;
-  // if (currentCheckIndex < Object.keys(checkList).length) {
-  document.getElementById("bunsi").innerHTML = currentCheckIndex
-  let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
-  document.getElementById("parsent").innerHTML = progressPercent;
-  document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+    document.getElementById("bunsi").innerHTML = currentCheckIndex
+    let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
+    document.getElementById("parsent").innerHTML = progressPercent;
+    document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
 
-  // **アコーディオンを開閉する**
-  if (currentCheckIndex < 5) {
-    openAccordionGroup("collapseGroupOne"); // 大項目Aを開く
-  } else if (currentCheckIndex < 10) {
-    openAccordionGroup("panelsStayOpen-collapseTwo"); // 大項目Bを開く
-  } else {
-    openAccordionGroup("panelsStayOpen-collapseThree"); // 大項目Cを開く
+    // **アコーディオンを開閉する**
+    if (currentCheckIndex < 5) {
+      openAccordionGroup("collapseGroupOne"); // 大項目Aを開く
+    } else if (currentCheckIndex < 10) {
+      openAccordionGroup("panelsStayOpen-collapseTwo"); // 大項目Bを開く
+    } else {
+      openAccordionGroup("panelsStayOpen-collapseThree"); // 大項目Cを開く
+    }
+
+    checkStart();
+  }else{
   }
-
-  checkStart();
-  // } else {
-  //   document.getElementById("bunsi").innerHTML = currentCheckIndex
-  //   let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
-  //   document.getElementById("parsent").innerHTML = progressPercent;
-  //   document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
-
-  //   saveToSession()
-  //   console.log("🎉 すべての点検が完了しました");
-  //   say('すべての点検が完了しました').then(()=>{
-  //     move('inspection_confirm.html')
-  //   })
-  // }
 }
 // ここからロジック実装
 function checkStart(){
