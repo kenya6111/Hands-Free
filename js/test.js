@@ -244,7 +244,7 @@ function nextCheck() {
 
 // 🔹 前の点検項目へ進む
 function beforeCheck() {
-  if(currentCheckIndex>0){
+  if (currentCheckIndex > 0) {
     document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
     currentCheckIndex-=1;
 
@@ -264,6 +264,10 @@ function beforeCheck() {
 
     checkStart();
   }else{
+    say("これ以上戻ることはできません")
+    .then(()=>{
+      recognition.start()
+    })
   }
 }
 // ここからロジック実装
