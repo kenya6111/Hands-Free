@@ -1,8 +1,6 @@
 let currentCheckIndex = 0; // 現在のチェック項目インデックス
 // セッションストレージキー
 const SESSION_KEY = "inspectionResults";
-// const voices = speechSynthesis.getVoices();
-// const selectedVoice = voices.find(voice => voice.name.includes("O-Ren"));
 function isNumeric(value) {
   return /^-?\d+(\.\d+)?$/.test(value);
 }
@@ -54,19 +52,25 @@ function openAccordionGroup(groupId) {
   bsCollapse.show();
 }
 function applyInspectionResultStyle(val,currentCheckIndex) {
-  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-black");
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-black"); 
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("bg-success-thin");
+  document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("border-success-thin");
+  document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("bg-success-so-thin");
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("bg-red-thin");
+  document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("border-red-thin");
+  document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("bg-red-so-thin");
   if (isWithinRange(val,currentCheckIndex)) {
-    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-success-bright"); // 合格なら緑
-    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-success-thin"); // 合格なら緑
-    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-success-thin"); // 不合格なら赤
-    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-success-so-thin"); // 不合格なら赤
+    // document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-success-bright");
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-success-thin");
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-success-thin");
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-success-so-thin");
+    // document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("font-success-thin");
   } else {
-    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-danger"); // 不合格なら赤
-    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-red-thin"); // 不合格なら赤
-    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-red-thin"); // 不合格なら赤
-    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-red-so-thin"); // 不合格なら赤
-    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("font-red-thin"); // 不合格なら赤
-    // document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-red-so-thin"); // 不合格なら赤
+    // document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("border-danger");
+    document.getElementById(`inspection${currentCheckIndex+1}`).classList.add("bg-red-thin");
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("border-red-thin");
+    document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("bg-red-so-thin");
+    // document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.add("font-red-thin");
   }
 }
 
@@ -121,31 +125,47 @@ const recognition = createRecognition((event) => {
   for (let i = event.resultIndex; i < event.results.length; i++) {
     let transcript = event.results[i][0].transcript;
     console.log("📢 認識結果: " + transcript);
-
+    if(transcript!='次' && transcript!='釣り'){
+      applyInspectionResultStyle(transcript,currentCheckIndex)
+    }
     if(isNumeric(transcript)){
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
       checkList[currentCheckIndex].value=transcript
-      applyInspectionResultStyle(transcript,currentCheckIndex)
       stopRecognition()
       .then(() => say(`${transcript} `)) // 数値入力時のみ復唱
       .then(() => setTimeout(() => recognition.start(), 300)); // 1秒後に音声認識を再開
     }
-
-    if(transcript.includes('次')){
-      console.log("^^^^次の項目へ^^^^")
+    if(transcript.includes('完了')){
+      stopRecognition().then(()=>{
+        saveToSession()
+        move('inspection_confirm.html')
+      })
+      break;
+    }
+    // if(transcript.includes('戻る')){
+    //   console.log("^^^^前の項目へ^^^^")
+    //   stopRecognition().then(()=>{
+    //     i-=1;
+    //   })
+    //   continue
+    // }
+    // if(transcript.includes('次')){
+    //   console.log("^^^^次の項目へ^^^^")
+    if(transcript!=''){
       stopRecognition().then(nextCheck)
     }
-    if(transcript.includes('NG')){
-      console.log("^^^^問題点の報告へ^^^^")
-      recognition.stop()
-      // 読み上げ開始
-      say("問題点の報告をしてください",()=>{
-        console.log('音声認識を開始します')
-        recognition.stop()
-        recognition2.start()
-      })
+    // }
+    // if(transcript.includes('NG')){
+    //   console.log("^^^^問題点の報告へ^^^^")
+    //   recognition.stop()
+    //   // 読み上げ開始
+    //   say("問題点の報告をしてください",()=>{
+    //     console.log('音声認識を開始します')
+    //     recognition.stop()
+    //     recognition2.start()
+    //   })
 
-    }
+    // }
 
   }
   console.log(event)
@@ -172,6 +192,7 @@ const recognition2 = createRecognition((event) => {
   }
   console.log(event)
 })
+
 function saveToSession(){
   window.sessionStorage.setItem(SESSION_KEY,JSON.stringify(checkList))
 }
@@ -224,6 +245,41 @@ function nextCheck() {
     })
   }
 }
+
+// 🔹 前の点検項目へ進む
+function beforeCheck() {
+  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
+
+  currentCheckIndex--;
+  // if (currentCheckIndex < Object.keys(checkList).length) {
+  document.getElementById("bunsi").innerHTML = currentCheckIndex
+  let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
+  document.getElementById("parsent").innerHTML = progressPercent;
+  document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+
+  // **アコーディオンを開閉する**
+  if (currentCheckIndex < 5) {
+    openAccordionGroup("collapseGroupOne"); // 大項目Aを開く
+  } else if (currentCheckIndex < 10) {
+    openAccordionGroup("panelsStayOpen-collapseTwo"); // 大項目Bを開く
+  } else {
+    openAccordionGroup("panelsStayOpen-collapseThree"); // 大項目Cを開く
+  }
+
+  checkStart();
+  // } else {
+  //   document.getElementById("bunsi").innerHTML = currentCheckIndex
+  //   let progressPercent = Math.round((currentCheckIndex / Object.keys(checkList).length) * 100);
+  //   document.getElementById("parsent").innerHTML = progressPercent;
+  //   document.getElementsByClassName("progress-bar")[0].style.width = `${progressPercent}%`;
+
+  //   saveToSession()
+  //   console.log("🎉 すべての点検が完了しました");
+  //   say('すべての点検が完了しました').then(()=>{
+  //     move('inspection_confirm.html')
+  //   })
+  // }
+}
 // ここからロジック実装
 function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
@@ -247,8 +303,12 @@ function checkStart(){
 document.addEventListener("DOMContentLoaded", function() {
     // 実行したい処理
     currentCheckIndex = 0; // 初期化
-    checkStart();
+    say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
+      checkStart();
+    })
 });
+
+
 document.getElementById("check-start").addEventListener('click',()=>{
   currentCheckIndex = 0; // 初期化
   checkStart();

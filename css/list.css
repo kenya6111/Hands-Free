@@ -31,7 +31,6 @@ body {
     width: 100%;
     margin: 0 auto;
     padding: 10px;
-    background-color: gainsboro;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -63,4 +62,16 @@ body {
     color: white;
     width: 70px;
     height: 50px;
+}
+
+.b-color {
+    background-color: #e3f2fd;
+}
+
+.p-color {
+    background-color: #b3b3b3;
+}
+
+.s-color {
+    background-color: #ffb74d;
 }
