@@ -1,27 +1,29 @@
 let currentCheckIndex = 0; // 現在のチェック項目インデックス
 // セッションストレージキー
 const SESSION_KEY = "inspectionResults";
+const KIND_LIST_SESSION_KEY="taskList"
+let taskList=[]
 function isNumeric(value) {
   return /^-?\d+(\.\d+)?$/.test(value);
 }
 
 // 点検項目定義
-const checkList ={
-  0:{id:"inspection1",name:'全長',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
-  1:{id:"inspection2",name:'全幅',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
-  2:{id:"inspection3",name:'全高',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
-  3:{id:"inspection4",name:'ホイールベース',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
-  4:{id:"inspection5",name:'トレッド',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
-  5:{id:"inspection6",name:'フロントドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
-  6:{id:"inspection7",name:'フロントドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
-  7:{id:"inspection8",name:'リアドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
-  8:{id:"inspection9",name:'リアドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
-  9:{id:"inspection10",name:'トランク開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
-  10:{id:"inspection11",name:'フレーム幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
-  11:{id:"inspection12",name:'フレーム高さ', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
-  12:{id:"inspection13",name:'アクスル間距離', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
-  13:{id:"inspection14",name:'サスペンション取付幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
-  14:{id:"inspection15",name:'サンルーフ開口寸法', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+let checkList ={
+  0:{id:"inspection1",parentId:'0',name:'全長',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  1:{id:"inspection2",parentId:'0',name:'全幅',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  2:{id:"inspection3",parentId:'0',name:'全高',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  3:{id:"inspection4",parentId:'0',name:'ホイールベース',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  4:{id:"inspection5",parentId:'0',name:'トレッド',category:"外装採寸測定",value:"",minValue:"12.4",maxValue:"12.7"},
+  5:{id:"inspection6",parentId:'0',name:'フロントドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  6:{id:"inspection7",parentId:'0',name:'フロントドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  7:{id:"inspection8",parentId:'0',name:'リアドア開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  8:{id:"inspection9",parentId:'0',name:'リアドア開口高さ',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  9:{id:"inspection10",parentId:'0',name:'トランク開口幅',category:"ドア・開口部",value:"",minValue:"12.4",maxValue:"12.7"},
+  10:{id:"inspection11",parentId:'0',name:'フレーム幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  11:{id:"inspection12",parentId:'0',name:'フレーム高さ', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  12:{id:"inspection13",parentId:'0',name:'アクスル間距離', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  13:{id:"inspection14",parentId:'0',name:'サスペンション取付幅', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
+  14:{id:"inspection15",parentId:'0',name:'サンルーフ開口寸法', category:"シャーシ関連",value:"",minValue:"12.4",maxValue:"12.7"},
 }
 document.getElementById("bunbo").innerHTML = Object.keys(checkList).length
 
@@ -141,12 +143,20 @@ const recognition = createRecognition((event) => {
         saveToSession()
         move('inspection_confirm.html')
       })
-      break;
+      break
     }
     if(transcript.includes('戻る')){
       console.log("^^^^前の項目へ^^^^")
       stopRecognition().then(beforeCheck)
       continue
+    }
+    if(transcript.includes('中断')){
+      console.log("^^^^中断^^^^")
+      stopRecognition().then(()=>{
+        saveToSession()
+        move('inspection_kind_list.html')
+      })
+      break
     }
     // if(transcript.includes('次')){
     //   console.log("^^^^次の項目へ^^^^")
@@ -191,8 +201,15 @@ const recognition2 = createRecognition((event) => {
 })
 
 function saveToSession(){
+  for (let task of taskList){
+    if(task.id === document.getElementById('parentId').value){
+      task.status = '1'
+    }
+  }
+  window.sessionStorage.setItem(KIND_LIST_SESSION_KEY,JSON.stringify(taskList))
   window.sessionStorage.setItem(SESSION_KEY,JSON.stringify(checkList))
 }
+
 function stopRecognition(){
   return new Promise(function(resolve, reject){
     if(recognition){
@@ -204,7 +221,6 @@ function stopRecognition(){
     }else{
       resolve()
     }
-
   })
 }
 
@@ -295,6 +311,11 @@ speechSynthesis.onvoiceschanged =()=>{
   let voices = speechSynthesis.getVoices()
   console.log(voices)
 
+  // 中断から再開した場合はセッションから復元
+  // if (sessionStorage.getItem("isInterrupted") === "true") {
+    loadFromSession();
+    // sessionStorage.removeItem("isInterrupted"); // フラグをリセット
+  // }
   currentCheckIndex = 0; // 初期化
     say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
       checkStart();
@@ -307,6 +328,33 @@ speechSynthesis.onvoiceschanged =()=>{
 //       checkStart();
 //     })
 // });
+function loadFromSession() {
+  
+  const taskListJson = sessionStorage.getItem(KIND_LIST_SESSION_KEY)
+  const checkListJson = sessionStorage.getItem(SESSION_KEY)
+  taskList = JSON.parse(taskListJson)
+  // 本日のタスク一覧画面で開始（または再開）したタスクのIdを取得
+  var queryString = location.search;
+  const params = new URLSearchParams(queryString);
+  const paramValue = params.get('taskId');
+  document.getElementById('parentId').value=paramValue
+
+  if(checkListJson){
+    checkList = JSON.parse(checkListJson)
+    // 取得したタスクIdをに紐づく検査項目についてsession値を取得し画面に反映
+    for(let i =0; i< Object.keys(checkList).length; i++){
+      if (!checkList[i]) continue; // undefined を回避
+      const parentId = checkList[i].parentId
+      if(parentId === paramValue){
+        //親タスクIDとこタスクIDが一緒の場合、画面に描画
+        document.getElementById(`inspection-input-${i+1}`).value = checkList[i].value
+      }else{
+        // 違う場合、スキップ
+        continue
+      }
+    }
+  }
+}
 
 
 document.getElementById("check-start").addEventListener('click',()=>{
