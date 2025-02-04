@@ -54,7 +54,7 @@ function openAccordionGroup(groupId) {
   bsCollapse.show();
 }
 function applyInspectionResultStyle(val,currentCheckIndex) {
-  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-black"); 
+  document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("border-success","border-4");
   document.getElementById(`inspection${currentCheckIndex+1}`).classList.remove("bg-success-thin");
   document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("border-success-thin");
   document.getElementById(`inspection-input-${currentCheckIndex+1}`).classList.remove("bg-success-so-thin");
@@ -128,15 +128,13 @@ const recognition = createRecognition((event) => {
   for (let i = event.resultIndex; i < event.results.length; i++) {
     let transcript = event.results[i][0].transcript;
     console.log("📢 認識結果: " + transcript);
-    if(transcript!='次' && transcript!='釣り'){
-      applyInspectionResultStyle(transcript,currentCheckIndex)
-    }
     if(isNumeric(transcript)){
+      applyInspectionResultStyle(transcript,currentCheckIndex)
       document.getElementById(`inspection-input-${currentCheckIndex+1}`).value = transcript // 音声入力値を現在の項目に反映し表示
       checkList[currentCheckIndex].value=transcript
       stopRecognition()
       .then(() => say(`${transcript} `)) // 数値入力時のみ復唱
-      .then(() => setTimeout(() => recognition.start(), 300)); // 1秒後に音声認識を再開
+      .then(nextCheck); // 1秒後に音声認識を再開
     }
     if(transcript.includes('完了')){
       stopRecognition().then(()=>{
@@ -158,11 +156,9 @@ const recognition = createRecognition((event) => {
       })
       break
     }
-    // if(transcript.includes('次')){
-    //   console.log("^^^^次の項目へ^^^^")
-    if(transcript!=''){
-      stopRecognition().then(nextCheck)
-    }
+    // if(transcript!='' && isNumeric(transcript)){
+    //   stopRecognition().then(nextCheck)
+    // }
     // }
     // if(transcript.includes('NG')){
     //   console.log("^^^^問題点の報告へ^^^^")
@@ -204,6 +200,7 @@ function saveToSession(){
   for (let task of taskList){
     if(task.id === document.getElementById('parentId').value){
       task.status = '1'
+      task.currentIndex = currentCheckIndex
     }
   }
   window.sessionStorage.setItem(KIND_LIST_SESSION_KEY,JSON.stringify(taskList))
@@ -223,10 +220,9 @@ function stopRecognition(){
     }
   })
 }
-
 // 🔹 次の点検項目へ進む
 function nextCheck() {
-  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
+  document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black","border-4");
 
   currentCheckIndex++;
   if (currentCheckIndex < Object.keys(checkList).length) {
@@ -262,7 +258,7 @@ function nextCheck() {
 // 🔹 前の点検項目へ進む
 function beforeCheck() {
   if (currentCheckIndex > 0) {
-    document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-black");
+    document.getElementById(`inspection${currentCheckIndex + 1}`).classList.remove("border-success","border-4");
     currentCheckIndex-=1;
 
     document.getElementById("bunsi").innerHTML = currentCheckIndex
@@ -292,9 +288,9 @@ function checkStart(){
   if (currentCheckIndex < Object.keys(checkList).length) {
     const currentItem = checkList[currentCheckIndex];
     console.log(`###${currentItem.name}を開始します###`)
+    document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-success","border-4");
     say(`${currentItem.name}`)
     .then(()=>{
-      document.getElementById(`inspection${currentCheckIndex + 1}`).classList.add("border-black");
       scroll(`inspection${currentCheckIndex + 1}`);
       recognition.start();
     });
@@ -310,26 +306,15 @@ speechSynthesis.onvoiceschanged =()=>{
   console.log("カスタム音声がダウンロードされました")
   let voices = speechSynthesis.getVoices()
   console.log(voices)
-
-  // 中断から再開した場合はセッションから復元
-  // if (sessionStorage.getItem("isInterrupted") === "true") {
-    loadFromSession();
-    // sessionStorage.removeItem("isInterrupted"); // フラグをリセット
-  // }
   currentCheckIndex = 0; // 初期化
-    say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
-      checkStart();
-    })
+  loadFromSession();
+  say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
+    checkStart();
+  })
 }
-// document.addEventListener("DOMContentLoaded", function() {
-//     // 実行したい処理
-//     currentCheckIndex = 0; // 初期化
-//     say(`採寸検査を開始します。${checkList[currentCheckIndex].name}から採寸を実施してください`).then(()=>{
-//       checkStart();
-//     })
-// });
+
+
 function loadFromSession() {
-  
   const taskListJson = sessionStorage.getItem(KIND_LIST_SESSION_KEY)
   const checkListJson = sessionStorage.getItem(SESSION_KEY)
   taskList = JSON.parse(taskListJson)
@@ -339,25 +324,42 @@ function loadFromSession() {
   const paramValue = params.get('taskId');
   document.getElementById('parentId').value=paramValue
 
-  if(checkListJson){
-    checkList = JSON.parse(checkListJson)
-    // 取得したタスクIdをに紐づく検査項目についてsession値を取得し画面に反映
-    for(let i =0; i< Object.keys(checkList).length; i++){
-      if (!checkList[i]) continue; // undefined を回避
-      const parentId = checkList[i].parentId
-      if(parentId === paramValue){
-        //親タスクIDとこタスクIDが一緒の場合、画面に描画
-        document.getElementById(`inspection-input-${i+1}`).value = checkList[i].value
-      }else{
-        // 違う場合、スキップ
-        continue
+  if (sessionStorage.getItem("isInterrupted") === "true") {
+    sessionStorage.removeItem("isInterrupted"); // フラグをリセット
+    currentCheckIndex = taskList[paramValue].currentIndex
+    // **アコーディオンを開閉する**
+    if (currentCheckIndex < 5) {
+      openAccordionGroup("collapseGroupOne"); // 大項目Aを開く
+    } else if (currentCheckIndex < 10) {
+      openAccordionGroup("panelsStayOpen-collapseTwo"); // 大項目Bを開く
+    } else {
+      openAccordionGroup("panelsStayOpen-collapseThree"); // 大項目Cを開く
+    }
+  
+    if(checkListJson){
+      checkList = JSON.parse(checkListJson)
+      // 取得したタスクIdをに紐づく検査項目についてsession値を取得し画面に反映
+      let count=0;
+      for(let i =0; i< Object.keys(checkList).length; i++){
+        if (!checkList[i]) continue; // undefined を回避
+        const parentId = checkList[i].parentId
+        if(parentId === paramValue){
+          //親タスクIDとこタスクIDが一緒の場合、画面に描画
+          document.getElementById(`inspection-input-${i+1}`).value = checkList[i].value
+          if(checkList[i].value !=''){
+            applyInspectionResultStyle(checkList[i].value, count++)
+          }
+        }else{
+          // 違う場合、スキップ
+          continue
+        }
       }
     }
   }
 }
 
 
-document.getElementById("check-start").addEventListener('click',()=>{
-  currentCheckIndex = 0; // 初期化
-  checkStart();
-})
+// document.getElementById("check-start").addEventListener('click',()=>{
+//   currentCheckIndex = 0; // 初期化
+//   checkStart();
+// })

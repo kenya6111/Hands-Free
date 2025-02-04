@@ -1,3 +1,5 @@
+let checkList={}
+
 document.querySelectorAll(".edit-btn").forEach(editBtn => {
   editBtn.addEventListener("click", function () {
     const row = this.closest("tr"); // クリックされた行を取得
@@ -54,7 +56,7 @@ const SESSION_KEY = "inspectionResults";
 // sessionから復元
 function loadFromSession() {
   const checkListJson = sessionStorage.getItem(SESSION_KEY)
-  const checkList = JSON.parse(checkListJson)
+  checkList = JSON.parse(checkListJson)
   for(let i =0; i<Object.keys(checkList).length; i++){
     const inputValue = checkList[i].value
     if(inputValue){
@@ -69,6 +71,24 @@ function loadFromSession() {
   }
 }
 
+document.getElementById("complete").addEventListener('click',()=>{
+  // 結果画面の検査結果を再読み取り
+  for(let i =0; i<Object.keys(checkList).length; i++){
+    const inputValue = document.getElementById(`inspection-input-${i+1}`).innerHTML
+    checkList[i].value = inputValue
+  }
+
+  // 読み取り結果をDBに保存
+  window.sessionStorage.setItem(SESSION_KEY,JSON.stringify(checkList))
+
+  // 親タスクのステータスを 3:完了 にする
+  let taskListJson = window.sessionStorage.getItem("taskList")
+  taskList = JSON.parse(taskListJson)
+  taskList[checkList[0].parentId].status = "3"
+  window.sessionStorage.setItem("taskList",JSON.stringify(taskList))
+  // 本日のタスク一覧画面に遷移する
+  window.location.href = "inspection_kind_list.html"
+})
 document.addEventListener("DOMContentLoaded", ()=>{
   loadFromSession()
 } );

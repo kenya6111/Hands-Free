@@ -1,11 +1,11 @@
 KIND_LIST_SESSION_KEY="taskList"
 let taskList = [// status0:未着手、 1:中断中、 2:進行中, 3:完了
-    {id:"0",name:"採寸検査(車両A)",status:"0"},
-    {id:"1",name:"採寸検査(車両B)",status:"0"},
-    {id:"2",name:"規定検査",status:"0"},
-    {id:"3",name:"法定検査",status:"0"},
-    {id:"4",name:"設備検査",status:"0"},
-    {id:"5",name:"在庫確認",status:"0"},
+    {id:"0",name:"採寸検査(車両A)",status:"0",currentIndex:""},
+    {id:"1",name:"採寸検査(車両B)",status:"0",currentIndex:""},
+    {id:"2",name:"規定検査",status:"0",currentIndex:""},
+    {id:"3",name:"法定検査",status:"0",currentIndex:""},
+    {id:"4",name:"設備検査",status:"0",currentIndex:""},
+    {id:"5",name:"在庫確認",status:"0",currentIndex:""},
 ]
 
 // ページ読み込み時に動作
@@ -41,11 +41,16 @@ function loadFromSession() {
         taskList = JSON.parse(taskListJson)
         // 取得したタスクIdをに紐づく検査項目についてsession値を取得し画面に反
         for(let i =0; i< taskList.length; i++){
+            const button = document.getElementById(`button${i+1}`)
             if(taskList[i].status ==='0'){
             }else if(taskList[i].status ==='1'){
-                const button = document.getElementById(`button${i+1}`)
                 button.innerHTML = "再開"
                 button.onclick = ()=>{ resumeTask('inspection_list.html',i); };
+            }else if(taskList[i].status ==='2'){
+            }else if(taskList[i].status ==='3'){
+                button.innerHTML = "完了"
+                button.disabled = true;
+                button.classList.add("btn-secondary");
             }else{
             }
         }
