@@ -2,7 +2,7 @@
 
 ---
 ▫️音声技術調査
-- VOSK
+- VOSK (Apache 2.0)
     - https://alphacephei.com/vosk/models?utm_source=chatgpt.com
     - vosk-model-small-ja-0.22.zipのモデルのzipファイルと、それをダウンロードする用のhttps://cdn.jsdelivr.net/npm/vosk-browser@0.0.5/dist/vosk.js"
     - vosk-model-small-ja-0.22
