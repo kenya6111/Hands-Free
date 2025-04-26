@@ -6,10 +6,10 @@
     - https://alphacephei.com/vosk/models?utm_source=chatgpt.com
     - vosk-model-small-ja-0.22.zipのモデルのzipファイルと、それをダウンロードする用のhttps://cdn.jsdelivr.net/npm/vosk-browser@0.0.5/dist/vosk.js"
     - vosk-model-small-ja-0.22
-        - html+jsでできる構成で試した。small版はサイズが48MB。認識精度はchrome標準搭載の音声認識APIより大きく劣る。ゴミ。
+        - html+jsでできる構成で試した。small版はサイズが48MB。認識精度はchrome標準搭載の音声認識APIより大きく劣る。却下。
     - vosk-model-ja-0.22
         - html+jsでできる構成で試した。サイズが1GB。処理が遅すぎる。とても実運用で使えない。
-        - pythonで試した。かなり誤認識が目立つ
+        - pythonで試した。かなり誤認識が目立つ。これも使えなさそう。
         ```py
         --- 読み上げてください ---
         python3 - <<'PY'
