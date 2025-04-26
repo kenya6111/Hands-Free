@@ -31,6 +31,22 @@
         六 ． 六 六
         七 ． 零 に
         ```
+        - 以下実行ソース
+        ```txt
+        python3 - <<'PY'
+        import sys, sounddevice as sd, queue, json, vosk, wave
+        q = queue.Queue()
+        def cb(indata, frames, t, status): q.put(bytes(indata))
+        model = vosk.Model("vosk-model-small-ja-0.22")
+        rec = vosk.KaldiRecognizer(model, 16000)
+        with sd.RawInputStream(samplerate=16000, blocksize = 8000,
+                               dtype='int16', channels=1, callback=cb):
+            print('--- 読み上げてください ---')
+            while True:
+                if rec.AcceptWaveform(q.get()):
+                    print(json.loads(rec.Result())["text"])
+        PY
+        ```
     
 
 
