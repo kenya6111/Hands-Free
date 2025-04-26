@@ -9,35 +9,14 @@
         - html+jsでできる構成で試した。small版はサイズが48MB。認識精度はchrome標準搭載の音声認識APIより大きく劣る。ゴミ。
     - vosk-model-ja-0.22
         - html+jsでできる構成で試した。サイズが1GB。処理が遅すぎる。とても実運用で使えない。
-        - pythonで試した。認識できているが所々かなり誤認識が目立つ
+        - pythonで試した。かなり誤認識が目立つ
         ```py
-        百 に
-        三十 五
-        おはよう ござい ます
-        六百 に
-        百 合
-        百 六
-        何 百 合
-        中 二 ． 五
-        十 六 ． 五
-        二十 二 点 を
-        三十 三 ． 四
-        三十 三 点 を
-        六十 三 ． 五 六
-        九十 二 ． 二 日 に
-        零 ． 命令 号
-        零 ． 姉 号
-        零 ． 三 に
-        六 ． 六 六
-        七 ． 零 に
-        ```
-        - 以下実行ソース
-        ```txt
+        --- 読み上げてください ---
         python3 - <<'PY'
         import sys, sounddevice as sd, queue, json, vosk, wave
         q = queue.Queue()
         def cb(indata, frames, t, status): q.put(bytes(indata))
-        model = vosk.Model("vosk-model-small-ja-0.22")
+        model = vosk.Model("vosk-model-ja-0.22")
         rec = vosk.KaldiRecognizer(model, 16000)
         with sd.RawInputStream(samplerate=16000, blocksize = 8000,
                                dtype='int16', channels=1, callback=cb):
@@ -46,8 +25,33 @@
                 if rec.AcceptWaveform(q.get()):
                     print(json.loads(rec.Result())["text"])
         PY
-        ```
-    
+        --- 読み上げてください ---
+        ん
+        
+        おはよう
+        こんにちは
+        百 人 展 を
+        ん ６ 点 ご
+        ６ 点 ご
+        ん
+        年 後
+        ん 間 に
+        ん と 思い
+        ん ひどい 出 遅れ
+        ん
+        おっぱい
+        ん おっぱい
+        ん ０ 点 名 郷
+        ん ６ 点 に 号
+        ん 百 号
+        ん 七十 号
+        ん 六十 五
+        ん 二十 二 点 ６
+        ん ３ 点 １
+        ん いち まる ご
+        ん 百 さん
+        ん
+        ```    
 
 
 ▫️懸念
