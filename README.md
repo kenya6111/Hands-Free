@@ -56,7 +56,16 @@
         - かなり遅い。普通のノートPCでは使えない
         - whisper.cppはPythonじゃなくて、C言語で書き直し、ガチガチに最適化してる。無駄な重い処理を全部カット。
         - 精度はそのまま、軽量・高速マシン用に鬼チューニングしてある
-
+- Google Cloud Speech-to-Text(Google音声認識API)
+    - 商用利用可能
+        - https://cloud.google.com/terms
+            - 1.1 Services Use〜の部分
+        -　https://moonlightdx999.hatenablog.com/entry/2019/02/03/120000  
+    - 料金は従量課金制
+      - https://cloud.google.com/speech-to-text/pricing
+      - （例: 標準モデルで音声1分あたり約0.016ドル＝約2円​
+      - 利用した分だけ低コスト化
+    
 - PCスペック
     - M3チップ搭載
         - Appleが作った最新の頭脳（CPU）。今までのM1・M2よりさらにパワーアップしてる。
