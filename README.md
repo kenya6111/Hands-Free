@@ -65,6 +65,8 @@
       - https://cloud.google.com/speech-to-text/pricing
       - （例: 標準モデルで音声1分あたり約0.016ドル＝約2円​
       - 利用した分だけ低コスト化
+  　- GCPアカウント内で取り扱われたデータを利用者に無断でGoogleが利用、開示することはない
+        - https://cloud.google.com/transparency?hl=ja 
   　- 検査A（日常点検）
         - 検査項目が300
         - よって発話数が300回＊発話時間(3秒) = 900秒 = 15分
