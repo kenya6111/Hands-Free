@@ -49,7 +49,13 @@
         ん いち まる ご
         ん 百 さん
         ん
-        ```    
+        ```
+- whisper
+    - whispercpp(large)
+        - https://huggingface.co/ggerganov/whisper.cpp#openais-whisper-models-converted-to-ggml-format-for-use-with-whispercpp
+        - かなり遅い。普通のノートPCでは使えない
+        - whisper.cppはPythonじゃなくて、C言語で書き直し、ガチガチに最適化してる。無駄な重い処理を全部カット。
+        - 精度はそのまま、軽量・高速マシン用に鬼チューニングしてある
 
 
 ▫️懸念
