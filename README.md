@@ -51,6 +51,21 @@
         ん
         ```
 - whisper
+    - whisper(small)
+    - 認識精度は十分良い。 
+    ```txt
+    Loading Whisper model: small on cpu ...
+    Model loaded.
+    コンソールで '開始' と入力 -> 録音開始, '終了' と入力 -> 録音終了&変換, 'exit' -> 終了
+    105 106 303
+    0.02、3.5、10.6、22.44、105.56
+    くぼみありいわついじょうまくわつチェックひけつ
+    1.2 0.05 3.96 9.96
+    0.02、0.6、9.5、開始、終了、スキップ、戻る、完了
+    4500、3500、1万、6500、103
+    1万、2万、3万、4万4千、5千500、5万500
+    >>> 
+    ```
     - whispercpp(large)
         - https://huggingface.co/ggerganov/whisper.cpp#openais-whisper-models-converted-to-ggml-format-for-use-with-whispercpp
         - かなり遅い。普通のノートPCでは使えない
