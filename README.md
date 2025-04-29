@@ -67,6 +67,19 @@
         1万、2万、3万、4万4千、5千500、5万500
         >>> 
         ```
+        - 騒音下での認識
+          - [factory noise(youtube)](https://www.youtube.com/watch?v=2kVf_qNfblQ)をpcの横で携帯の音量MAXで流しつつ音声入力
+              - ヘッドセット未使用
+              - PCのマイクで入力
+          - 以下の音声を入力
+            - 「102」,「95」,「0.02」,「12.49」,「開始」,「終了」,「保存」,「戻る」,「スキップ」
+        　```txt
+            102.95.0.002.12.49.開始.終了.保存.戻る.
+            102、95、0.02、12.49、開始、終了、保存、戻る、スキップ
+            102、95、0.02、12.49、開始、終了、保存、戻る、スキップ
+        　```
+      　　- 
+        - 「人の声が含まれないノイズだけの音声」を無理やりWhisperが文字に起こそうとしてしまうと、「ドアを押すドアを押す…」など関係ない文字列に変換される現象
     - whispercpp(large)
         - https://huggingface.co/ggerganov/whisper.cpp#openais-whisper-models-converted-to-ggml-format-for-use-with-whispercpp
         - かなり遅い。普通のノートPCでは使えない
