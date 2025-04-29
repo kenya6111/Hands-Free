@@ -51,6 +51,7 @@
         ん
         ```
 - whisper
+    - サイズは( tiny, base, small, medium, large-v2)    
     - whisper(small)
     - 認識精度は十分良い。 
     ```txt
