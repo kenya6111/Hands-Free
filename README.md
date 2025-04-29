@@ -78,6 +78,7 @@
             102、95、0.02、12.49、開始、終了、保存、戻る、スキップ
             102、95、0.02、12.49、開始、終了、保存、戻る、スキップ
             ```
+          - pcマイクでも十分に認識できている
         - 「人の声が含まれないノイズだけの音声」を無理やりWhisperが文字に起こそうとしてしまうと、「ドアを押すドアを押す…」など関係ない文字列に変換される現象
     - whispercpp(large)
         - https://huggingface.co/ggerganov/whisper.cpp#openais-whisper-models-converted-to-ggml-format-for-use-with-whispercpp
